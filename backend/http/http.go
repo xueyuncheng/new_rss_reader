@@ -13,16 +13,18 @@ func InitHttp() {
 }
 
 func InitRouter(router *gin.Engine) {
-	feed := router.Group("/feeds")
+	api := router.Group("/api")
+
+	feed := api.Group("/feeds")
 	{
 		feed.POST("", wrap(AddFeed))
-		feed.GET("", wrap(GetFeed))
+		feed.GET("", wrap(ListFeed))
 		feed.DELETE("/:id", wrap(DeleteFeed))
 	}
 
-	news := router.Group("/news")
+	news := api.Group("/news")
 	{
-		news.GET("", wrap(GetNews))
+		news.GET("", wrap(ListNews))
 	}
 }
 

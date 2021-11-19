@@ -10,7 +10,7 @@ import (
 
 func GetNews(ctx context.Context) ([]*model.News, error) {
 	news := make([]*model.News, 0, 1024)
-	if err := DB.Order("id desc").Limit(1000).Find(&news).Error; err != nil {
+	if err := DB.Order("publish_time desc").Limit(1000).Find(&news).Error; err != nil {
 		log.Sugar.Errorw("get news error", "error", err)
 		return nil, fmt.Errorf("get news error: %v", err)
 	}

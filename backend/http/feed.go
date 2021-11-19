@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetFeed(ctx *gin.Context) interface{} {
+func ListFeed(ctx *gin.Context) interface{} {
 	feeds, err := service.GetFeed(ctx)
 	if err != nil {
 		return ecode.ErrInternal.WithData(err.Error())

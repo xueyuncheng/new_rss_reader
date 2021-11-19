@@ -2,16 +2,29 @@ package http
 
 import (
 	"myNewFeed/internal/ecode"
+	"myNewFeed/model"
 	"myNewFeed/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetNews(ctx *gin.Context) interface{} {
+func ListNews(ctx *gin.Context) interface{} {
 	news, err := service.GetNews(ctx)
 	if err != nil {
 		return ecode.ErrInternal.WithData(err.Error())
 	}
 
-	return ecode.ErrOK.WithData(news)
+	newsResp := make([]*model.ListNewsResp, 0, len(news))
+	for _, v := range news {
+		tmp := &model.ListNewsResp{
+			ID:          v.ID,
+			Title:       v.Title,
+			Link:        v.Link,
+			PublishTime: v.PublishTime.Format("2006-01-02 15:04:05"),
+		}
+
+		newsResp = append(newsResp, tmp)
+	}
+
+	return ecode.ErrOK.WithData(newsResp)
 }

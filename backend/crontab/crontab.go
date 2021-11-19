@@ -1,6 +1,7 @@
 package crontab
 
 import (
+	"myNewFeed/internal/log"
 	"myNewFeed/service"
 
 	"github.com/robfig/cron/v3"
@@ -8,9 +9,11 @@ import (
 
 func InitCrontab() {
 	c := cron.New()
-	c.AddFunc("0 * * * * *", func() {
+	if _, err := c.AddFunc("* * * * *", func() {
 		service.RefreshNews()
-	})
+	}); err != nil {
+		log.Sugar.Fatalw("init crontab failed", "err", err)
+	}
 
 	c.Start()
 }
