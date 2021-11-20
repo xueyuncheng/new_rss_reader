@@ -1,21 +1,26 @@
 <template>
-  <div class="feed" v-for="feed in feeds" :key="feed.id">
-    <input
-      type="checkbox"
-      v-model="checked_ids"
-      :key="feed.id"
-      :value="feed.id"
-    />
-    <label for="feed.id">{{ feed.name }}</label>
-    <button @click="deleteFeed(feed.id)" :key="feed.id">删除</button>
+  <div class="feed_group">
+    <form @submit.prevent="addFeed(feed_name)" style="display: inline-block">
+      <input type="text" :value="feed_name" placeholder="请输入RSS源" />
+      <button type="submit">添加</button>
+    </form>
+
+    <button style="margin-left: 20px" @click="listNews(checked_ids)">
+      刷新
+    </button>
+
+    <div class="feed" v-for="feed in feeds" :key="feed.id">
+      <input
+        type="checkbox"
+        v-model="checked_ids"
+        :key="feed.id"
+        :value="feed.id"
+        :id="feed.id"
+      />
+      <label :for="feed.id" style="margin-left: 5px">{{ feed.name }}</label>
+      <button @click="deleteFeed(feed.id)" :key="feed.id">删除</button>
+    </div>
   </div>
-
-  <form @submit.prevent="addFeed(name)">
-    <input type="text" v-model="name" />
-    <button type="submit">Add</button>
-  </form>
-
-  <button @click="listNews(checked_ids)">刷新</button>
 
   <div class="news">
     <ol>
@@ -36,7 +41,7 @@ export default {
   data() {
     return {
       feeds: [],
-      name: "",
+      feed_name: "",
       checked_ids: [],
       newses: [],
     };
@@ -49,7 +54,6 @@ export default {
 
   methods: {
     listFeed() {
-      console.log(this.checked_ids);
       axios
         .get("http://localhost:10001/api/feeds")
         .then((response) => {
@@ -85,8 +89,7 @@ export default {
         });
     },
 
-    listNews(checked_ids) {
-      console.log(checked_ids);
+    listNews() {
       axios
         .get(`http://localhost:10001/api/news`, {
           params: {
@@ -103,3 +106,15 @@ export default {
   },
 };
 </script>
+
+<style>
+button {
+  min-width: 60px;
+  min-height: 25px;
+  margin-left: 20px;
+}
+
+.feed {
+  margin-top: 10px;
+}
+</style>
