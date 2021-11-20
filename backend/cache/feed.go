@@ -13,7 +13,7 @@ import (
 )
 
 // 获取所有的rss源名称
-func GetFeed(ctx context.Context) ([]*model.Feed, error) {
+func ListFeed(ctx context.Context) ([]*model.Feed, error) {
 	var err error
 	feeds := make([]*model.Feed, 0, 16)
 
@@ -34,7 +34,7 @@ func GetFeed(ctx context.Context) ([]*model.Feed, error) {
 			return nil, fmt.Errorf("redis set error: %w", err)
 		}
 
-		return GetFeed(ctx)
+		return ListFeed(ctx)
 	} else if err != nil {
 		return nil, fmt.Errorf("redis get error: %v", err)
 	}

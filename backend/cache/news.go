@@ -12,13 +12,13 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func GetNews(ctx context.Context) ([]*model.News, error) {
+func ListNews(ctx context.Context) ([]*model.News, error) {
 	news := make([]*model.News, 0, 1024)
 	var err error
 
 	newsByte, err := RedisClient.Get(ctx, "news").Bytes()
 	if err == redis.Nil {
-		news, err = database.GetNews(ctx)
+		news, err = database.ListNews(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -34,7 +34,7 @@ func GetNews(ctx context.Context) ([]*model.News, error) {
 			return nil, fmt.Errorf("cache.GetNews: %w", err)
 		}
 
-		return GetNews(ctx)
+		return ListNews(ctx)
 	} else if err != nil {
 		log.Sugar.Errorw("cache.GetNews", "error", err)
 		return nil, fmt.Errorf("cache.GetNews: %w", err)

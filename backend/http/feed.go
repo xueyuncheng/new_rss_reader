@@ -10,7 +10,7 @@ import (
 )
 
 func ListFeed(ctx *gin.Context) interface{} {
-	feeds, err := service.GetFeed(ctx)
+	feeds, err := service.ListFeed(ctx)
 	if err != nil {
 		return ecode.ErrInternal.WithData(err.Error())
 	}

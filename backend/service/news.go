@@ -8,14 +8,17 @@ import (
 	"myNewFeed/model"
 )
 
-func GetNews(ctx context.Context) ([]*model.News, error) {
-	return cache.GetNews(ctx)
+func ListNews(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error) {
+	if len(req.FeedIDs) > 0 {
+		return database.ListNewsByFeedID(ctx, req.FeedIDs)
+	}
+	return cache.ListNews(ctx)
 }
 
 func RefreshNews() {
 	ctx := context.Background()
 
-	feeds, err := cache.GetFeed(ctx)
+	feeds, err := cache.ListFeed(ctx)
 	if err != nil {
 		return
 	}

@@ -8,8 +8,8 @@ import (
 )
 
 // 获取所有的 RSS 源
-func GetFeed(ctx context.Context) ([]*model.Feed, error) {
-	return cache.GetFeed(ctx)
+func ListFeed(ctx context.Context) ([]*model.Feed, error) {
+	return cache.ListFeed(ctx)
 }
 
 // 添加一个 RSS 源

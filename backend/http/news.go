@@ -9,7 +9,12 @@ import (
 )
 
 func ListNews(ctx *gin.Context) interface{} {
-	news, err := service.GetNews(ctx)
+	req := &model.ListNewsReq{}
+	if err := ctx.ShouldBind(req); err != nil {
+		return ecode.ErrInternal.WithData(err.Error())
+	}
+
+	news, err := service.ListNews(ctx, req)
 	if err != nil {
 		return ecode.ErrInternal.WithData(err.Error())
 	}
@@ -21,6 +26,8 @@ func ListNews(ctx *gin.Context) interface{} {
 			Title:       v.Title,
 			Link:        v.Link,
 			PublishTime: v.PublishTime.Format("2006-01-02 15:04:05"),
+			FeedID:      v.FeedID,
+			FeedName:    v.FeedName,
 		}
 
 		newsResp = append(newsResp, tmp)
