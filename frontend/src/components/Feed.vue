@@ -1,30 +1,31 @@
 <template>
   <div class="feed_group">
-    <form @submit.prevent="addFeed(feed_name)" style="display: inline-block">
-      <input type="text" :value="feed_name" placeholder="请输入RSS源" />
+    <form @submit.prevent="addFeed(name)" style="display: inline-block">
+      <input type="text" v-model="name" placeholder="请输入RSS源" />
       <button type="submit">添加</button>
     </form>
 
-    <button style="margin-left: 20px" @click="listNews(checked_ids)">
-      刷新
-    </button>
+    <button style="margin-left: 20px" @click="listNews()">刷新</button>
 
     <div class="feed" v-for="feed in feeds" :key="feed.id">
       <input
-        type="checkbox"
+        type="radio"
         v-model="checked_ids"
         :key="feed.id"
         :value="feed.id"
         :id="feed.id"
+        @click="listNews(feed.id)"
       />
-      <label :for="feed.id" style="margin-left: 5px">{{ feed.name }}</label>
+      <label :for="feed.id" style="margin-left: 5px">
+        {{ feed.name }}
+      </label>
       <button @click="deleteFeed(feed.id)" :key="feed.id">删除</button>
     </div>
   </div>
 
-  <div class="news">
+  <div class="news_group">
     <ol>
-      <li v-for="item in newses" :key="item.id">
+      <li class="news" v-for="item in newses" :key="item.id">
         <a :href="item.link">{{ item.title }}</a>
         [{{ item.publish_time }}]
       </li>
@@ -41,7 +42,7 @@ export default {
   data() {
     return {
       feeds: [],
-      feed_name: "",
+      name: "",
       checked_ids: [],
       newses: [],
     };
@@ -89,11 +90,11 @@ export default {
         });
     },
 
-    listNews() {
+    listNews(feed_id) {
       axios
         .get(`http://localhost:10001/api/news`, {
           params: {
-            feed_ids: this.checked_ids,
+            feed_id: feed_id,
           },
         })
         .then((response) => {
@@ -116,5 +117,9 @@ button {
 
 .feed {
   margin-top: 10px;
+}
+
+.news {
+  margin-top: 5px;
 }
 </style>

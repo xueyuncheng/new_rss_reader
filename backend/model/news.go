@@ -3,7 +3,7 @@ package model
 import "time"
 
 type ListNewsReq struct {
-	FeedIDs []int `form:"feed_ids[]"`
+	FeedID int `form:"feed_id"`
 }
 
 type ListNewsResp struct {

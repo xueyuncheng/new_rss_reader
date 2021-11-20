@@ -18,9 +18,9 @@ func ListNews(ctx context.Context) ([]*model.News, error) {
 	return news, nil
 }
 
-func ListNewsByFeedID(ctx context.Context, feedIDs []int) ([]*model.News, error) {
+func ListNewsByFeedID(ctx context.Context, feedID int) ([]*model.News, error) {
 	news := make([]*model.News, 0, 1024)
-	if err := DB.Where("feed_id in ?", feedIDs).Order("publish_time desc").Limit(1000).Find(&news).Error; err != nil {
+	if err := DB.Where("feed_id = ?", feedID).Order("publish_time desc").Limit(1000).Find(&news).Error; err != nil {
 		log.Sugar.Errorw("get news error", "error", err)
 		return nil, fmt.Errorf("get news error: %v", err)
 	}

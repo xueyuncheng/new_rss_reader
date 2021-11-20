@@ -9,6 +9,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
+            "env": {
+                // "HTTP_PROXY": "http://localhost:8123"
+            },
             "program": "${workspaceRoot}/cmd/"
         }
     ]
