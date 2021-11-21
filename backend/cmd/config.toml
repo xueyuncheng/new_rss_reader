@@ -1,0 +1,18 @@
+[Mysql]
+Host = "127.0.0.1"
+Port = "3306"
+Username = "root"
+Password = "abcd1234"
+Database = "rss"
+
+[Redis]
+Host = "127.0.0.1"
+Port = "6379"
+Password = ""
+
+[Http]
+Port = "10001"
+
+[Proxy]
+Host = "47.117.165.47"
+Port = "8123"

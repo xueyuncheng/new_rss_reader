@@ -26,7 +26,7 @@
   <div class="news_group">
     <ol>
       <li class="news" v-for="item in newses" :key="item.id">
-        <a :href="item.link">{{ item.title }}</a>
+        <a :href="item.link" target="_blank">{{ item.title }}</a>
         [{{ item.publish_time }}]
       </li>
     </ol>
@@ -56,7 +56,7 @@ export default {
   methods: {
     listFeed() {
       axios
-        .get("http://localhost:10001/api/feeds")
+        .get("/api/feeds")
         .then((response) => {
           this.feeds = response.data.data;
         })
@@ -67,7 +67,7 @@ export default {
 
     addFeed(name) {
       axios
-        .post("http://localhost:10001/api/feeds", {
+        .post("/api/feeds", {
           name: name,
         })
         .then(() => {
@@ -81,7 +81,7 @@ export default {
 
     deleteFeed(feed_id) {
       axios
-        .delete(`http://localhost:10001/api/feeds/${feed_id}`)
+        .delete(`api/feeds/${feed_id}`)
         .then(() => {
           this.listFeed();
         })
@@ -92,7 +92,7 @@ export default {
 
     listNews(feed_id) {
       axios
-        .get(`http://localhost:10001/api/news`, {
+        .get(`/api/news`, {
           params: {
             feed_id: feed_id,
           },

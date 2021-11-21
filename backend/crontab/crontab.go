@@ -12,7 +12,7 @@ func InitCrontab() {
 	if _, err := c.AddFunc("* * * * *", func() {
 		service.RefreshNews()
 	}); err != nil {
-		log.Sugar.Fatalw("init crontab failed", "err", err)
+		log.Sugar.Fatalw("添加定时任务错误", "err", err)
 	}
 
 	c.Start()

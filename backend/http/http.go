@@ -1,15 +1,21 @@
 package http
 
 import (
+	"fmt"
+	"myNewFeed/internal/log"
+	"myNewFeed/model"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func InitHttp() {
+func InitHttp(config *model.Http) {
 	router := gin.Default()
 	router.Use(cors.Default())
 	InitRouter(router)
-	router.Run(":10001")
+	if err := router.Run(fmt.Sprintf(":%v", config.Port)); err != nil {
+		log.Sugar.Fatalw("http服务启动失败", "err", err)
+	}
 }
 
 func InitRouter(router *gin.Engine) {

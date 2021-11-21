@@ -44,6 +44,7 @@ require (
 )
 
 require (
+	github.com/BurntSushi/toml v0.4.1
 	github.com/PuerkitoBio/goquery v1.5.1 // indirect
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.1

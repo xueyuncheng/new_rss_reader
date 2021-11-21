@@ -7,7 +7,6 @@ import (
 	"myNewFeed/internal/log"
 	"myNewFeed/model"
 	"net/http"
-	"net/url"
 )
 
 func ListNews(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error) {
@@ -25,12 +24,6 @@ func RefreshNews() {
 		return
 	}
 
-	proxyUrl, err := url.Parse("http://127.0.0.1:8123")
-	if err != nil {
-		log.Sugar.Errorw("parse proxy url error", "error", err)
-		return
-	}
-
 	news := make([]*model.News, 0, 128)
 	for _, v := range feeds {
 		lastNewsTime, err := cache.GetLastNewsTime(ctx, v.ID)
@@ -43,10 +36,12 @@ func RefreshNews() {
 			log.Sugar.Errorf("ParseURL %v error: %v", v.Name, err)
 
 			srv.FeedParser.Client.Transport = &http.Transport{
-				Proxy: http.ProxyURL(proxyUrl),
+				Proxy: http.ProxyURL(srv.ProxyUrl),
 			}
 			continue
 		}
+
+		// log.Sugar.Infow("ParseURL succeed", "url", v.Name)
 
 		for _, v2 := range feed.Items {
 			if !v2.PublishedParsed.After(lastNewsTime) {

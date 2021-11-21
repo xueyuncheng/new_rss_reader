@@ -1,14 +1,19 @@
 package cache
 
-import "github.com/go-redis/redis/v8"
+import (
+	"fmt"
+	"myNewFeed/model"
+
+	"github.com/go-redis/redis/v8"
+)
 
 var RedisClient *redis.Client
 
-func InitRedis() {
+func InitRedis(config *model.Redis) {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     fmt.Sprintf("%v:%v", config.Host, config.Port),
+		Password: config.Password,
+		DB:       0, // use default DB
 	})
 
 	RedisClient = rdb
