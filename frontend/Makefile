@@ -4,7 +4,7 @@ dist:
 	npm run build
 
 build-image: dist
-	docker build -t $(IMAGE) .
+	docker build --platform linux/amd64 -t $(IMAGE) .
 
 push-image: build-image
 	docker push $(IMAGE)

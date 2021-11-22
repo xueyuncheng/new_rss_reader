@@ -7,6 +7,7 @@ import (
 	"myNewFeed/internal/log"
 	"myNewFeed/model"
 	"net/http"
+	"time"
 )
 
 func ListNews(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error) {
@@ -41,20 +42,35 @@ func RefreshNews() {
 			continue
 		}
 
-		// log.Sugar.Infow("ParseURL succeed", "url", v.Name)
+		log.Sugar.Infow("ParseURL succeed", "url", v.Name)
 
 		for _, v2 := range feed.Items {
-			if !v2.PublishedParsed.After(lastNewsTime) {
+			if v2.PublishedParsed != nil && !v2.PublishedParsed.After(lastNewsTime) {
 				continue
+			}
+
+			if feed.UpdatedParsed != nil && !feed.UpdatedParsed.After(lastNewsTime) {
+				continue
+			}
+
+			publishTime := time.Time{}
+
+			if v2.PublishedParsed != nil {
+				publishTime = *v2.PublishedParsed
+			} else if feed.UpdatedParsed != nil {
+				publishTime = *feed.UpdatedParsed
+			} else {
+				log.Sugar.Infow("feed has no update time and news has no publish time", v2.Link)
 			}
 
 			tmp := &model.News{
 				Title:       v2.Title,
 				Link:        v2.Link,
-				PublishTime: *v2.PublishedParsed,
+				PublishTime: publishTime,
 				FeedID:      int(v.ID),
 				FeedName:    v.Name,
 			}
+
 			news = append(news, tmp)
 		}
 

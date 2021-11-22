@@ -9,7 +9,7 @@ import (
 
 func InitCrontab() {
 	c := cron.New()
-	if _, err := c.AddFunc("* * * * *", func() {
+	if _, err := c.AddFunc("*/5 * * * *", func() {
 		service.RefreshNews()
 	}); err != nil {
 		log.Sugar.Fatalw("添加定时任务错误", "err", err)
