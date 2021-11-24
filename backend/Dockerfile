@@ -9,6 +9,10 @@ RUN cd cmd/ && go build -o rss_backend
 
 FROM ubuntu:latest
 
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
 WORKDIR /app
 
 COPY --from=builder /app/cmd/rss_backend .
