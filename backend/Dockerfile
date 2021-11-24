@@ -9,10 +9,11 @@ RUN cd cmd/ && go build -o rss_backend
 
 FROM ubuntu:latest
 
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# 在安装tzdata之前最好先update和upgrade，以防apt-get获取不到tzdata
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install -y tzdata && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-RUN apt update && apt install -y ca-certificates
+RUN apt install -y ca-certificates
 
 WORKDIR /app
 
