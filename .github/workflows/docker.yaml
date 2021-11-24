@@ -8,7 +8,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: docker.io/docker12345rekcod
+        name: docker12345rekcod/rss_frontend
         username: ${{ secrets.DOCKER_USER_NAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: frontend/Dockerfile
+        workdir: frontend
