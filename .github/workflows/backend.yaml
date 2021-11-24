@@ -1,4 +1,4 @@
-name: Publish rss_backend docker image
+name: rss_backend image
 on: [push]
 jobs:
   build:
