@@ -14,4 +14,4 @@ WORKDIR /app
 COPY --from=builder /app/cmd/rss_backend .
 COPY --from=builder /app/cmd/config.toml .
 
-CMD ["./rss", "-f", "config.toml"]
+CMD ["./rss_backend", "-f", "config.toml"]
