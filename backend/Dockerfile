@@ -1,18 +1,17 @@
-FROM alpine:latest
+FROM golang:latest AS builder
 
-RUN sed -i 's!http://dl-cdn.alpinelinux.org/!https://mirrors.ustc.edu.cn/!g' /etc/apk/repositories
+WORKDIR /app 
 
-RUN apk add --no-cache ca-certificates && \
-    update-ca-certificates
+COPY . .
 
-RUN apk --no-cache add tzdata && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone
-ENV TZ Asia/Shanghai
+RUN cd cmd/ && go build -o rss_backend
+
+
+FROM ubuntu:latest
 
 WORKDIR /app
 
-COPY ./cmd/rss rss
-COPY ./cmd/config.toml config.toml
+COPY --from=builder /app/cmd/rss_backend .
+COPY --from=builder /app/cmd/config.toml .
 
 CMD ["./rss", "-f", "config.toml"]
