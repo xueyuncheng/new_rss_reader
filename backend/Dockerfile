@@ -12,6 +12,8 @@ FROM ubuntu:latest
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+RUN apt update && apt install -y ca-certificates
+
 WORKDIR /app
 
 COPY --from=builder /app/cmd/rss_backend .
