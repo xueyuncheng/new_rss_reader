@@ -12,7 +12,7 @@ import (
 
 func ListNews(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error) {
 	if req.FeedID != 0 {
-		return database.ListNewsByFeedID(ctx, req.FeedID)
+		return cache.ListNewsByFeedID(ctx, req)
 	}
 	return cache.ListNews(ctx)
 }
