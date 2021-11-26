@@ -5,12 +5,16 @@ import (
 	"myNewFeed/internal/log"
 	"myNewFeed/model"
 
+	"github.com/gin-contrib/pprof"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func InitHttp(config *model.Http) {
 	router := gin.Default()
+	pprof.Register(router)
+
 	router.Use(cors.Default())
 	InitRouter(router)
 	if err := router.Run(fmt.Sprintf(":%v", config.Port)); err != nil {

@@ -14,6 +14,8 @@ import (
 )
 
 func main() {
+	initPprof()
+
 	file := flag.String("f", "./config.toml", "config file path")
 
 	flag.Parse()
