@@ -6,7 +6,7 @@ services:
     depends_on:
       - rss_backend
     ports:
-      - "10005:80"
+      - "60005:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
 
