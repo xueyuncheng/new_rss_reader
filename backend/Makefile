@@ -1,5 +1,5 @@
 build-linux:
-	cd cmd && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o rss
+	cd cmd && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o rss_backend
 
 build-image:
 	docker build -t docker12345rekcod/rss_backend:latest .

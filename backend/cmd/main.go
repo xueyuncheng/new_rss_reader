@@ -9,6 +9,7 @@ import (
 	"myNewFeed/internal/log"
 	"myNewFeed/model"
 	"myNewFeed/service"
+	"os"
 
 	"github.com/BurntSushi/toml"
 )
@@ -25,10 +26,12 @@ func main() {
 		log.Sugar.Fatalw("配置文件读取失败", "err", err)
 	}
 
+	os.Setenv("HTTP_PROXY", config.Proxy.Address)
+
 	log.InitLog()
 	database.InitDB(&config.Mysql)
 	cache.InitRedis(&config.Redis)
-	service.InitService(&config.Proxy)
-	crontab.InitCrontab()
+	service.InitService()
+	crontab.InitCrontab(&config.CronTab)
 	http.InitHttp(&config.Http)
 }

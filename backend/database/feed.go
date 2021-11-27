@@ -9,7 +9,7 @@ import (
 
 func GetFeed(ctx context.Context) ([]*model.Feed, error) {
 	feeds := make([]*model.Feed, 0, 16)
-	if err := DB.Find(&feeds).Error; err != nil {
+	if err := db.Find(&feeds).Error; err != nil {
 		log.Sugar.Errorw("获取rss源错误", "err", err)
 		return nil, fmt.Errorf("获取rss源错误: %v", err)
 	}
@@ -18,7 +18,7 @@ func GetFeed(ctx context.Context) ([]*model.Feed, error) {
 }
 
 func AddFeed(ctx context.Context, feed *model.Feed) error {
-	if err := DB.Create(feed).Error; err != nil {
+	if err := db.Create(feed).Error; err != nil {
 		log.Sugar.Errorw("添加rss源错误", "err", err)
 		return fmt.Errorf("添加rss源错误: %v", err)
 	}
@@ -27,7 +27,7 @@ func AddFeed(ctx context.Context, feed *model.Feed) error {
 }
 
 func DeleteFeed(ctx context.Context, id int) error {
-	if err := DB.Where("id = ?", id).Delete(&model.Feed{}).Error; err != nil {
+	if err := db.Where("id = ?", id).Delete(&model.Feed{}).Error; err != nil {
 		log.Sugar.Errorw("删除rss源错误", "err", err)
 		return fmt.Errorf("删除rss源错误: %v", err)
 	}
