@@ -16,7 +16,9 @@ func InitHttp(config *model.Http) {
 	pprof.Register(router)
 
 	router.Use(cors.Default())
+
 	InitRouter(router)
+
 	if err := router.Run(fmt.Sprintf(":%v", config.Port)); err != nil {
 		log.Sugar.Fatalw("http服务启动失败", "err", err)
 	}

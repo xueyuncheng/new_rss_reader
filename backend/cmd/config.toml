@@ -1,3 +1,6 @@
+[CronTab]
+Schedule = "*/1 * * * *"
+
 [Mysql]
 Host = "127.0.0.1"
 Port = "3306"
@@ -6,13 +9,11 @@ Password = "abcd1234"
 Database = "rss"
 
 [Redis]
-Host = "127.0.0.1"
-Port = "6379"
+Address = "127.0.0.1:6379"
 Password = ""
 
 [Http]
 Port = "10001"
 
 [Proxy]
-Host = "47.117.165.47"
-Port = "8123"
+Address = "http://47.117.165.47:8123"

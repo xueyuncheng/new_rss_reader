@@ -1,10 +1,11 @@
 package model
 
 type Config struct {
-	Mysql Mysql
-	Redis Redis
-	Http  Http
-	Proxy Proxy
+	Mysql   Mysql
+	Redis   Redis
+	Http    Http
+	Proxy   Proxy
+	CronTab CronTab
 }
 
 type Mysql struct {
@@ -16,8 +17,7 @@ type Mysql struct {
 }
 
 type Redis struct {
-	Host     string
-	Port     string
+	Address  string
 	Password string
 }
 
@@ -26,6 +26,9 @@ type Http struct {
 }
 
 type Proxy struct {
-	Host string
-	Port string
+	Address string
+}
+
+type CronTab struct {
+	Schedule string
 }

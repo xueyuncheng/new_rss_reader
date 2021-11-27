@@ -13,12 +13,9 @@ import (
 )
 
 func ListNews(ctx context.Context) ([]*model.News, error) {
-	news := make([]*model.News, 0, 1024)
-	var err error
-
-	newsByte, err := RedisClient.Get(ctx, "news").Bytes()
+	newsBytes, err := rdb.Get(ctx, "news").Bytes()
 	if err == redis.Nil {
-		news, err = database.ListNews(ctx)
+		news, err := database.ListNews(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -29,7 +26,7 @@ func ListNews(ctx context.Context) ([]*model.News, error) {
 			return nil, fmt.Errorf("cache.GetNews: %w", err)
 		}
 
-		if err := RedisClient.Set(ctx, "news", tmp, time.Hour).Err(); err != nil {
+		if err := rdb.Set(ctx, "news", tmp, time.Hour).Err(); err != nil {
 			log.Sugar.Errorw("cache.GetNews", "error", err)
 			return nil, fmt.Errorf("cache.GetNews: %w", err)
 		}
@@ -40,7 +37,8 @@ func ListNews(ctx context.Context) ([]*model.News, error) {
 		return nil, fmt.Errorf("cache.GetNews: %w", err)
 	}
 
-	if err := json.Unmarshal(newsByte, &news); err != nil {
+	news := make([]*model.News, 0, 1024)
+	if err := json.Unmarshal(newsBytes, &news); err != nil {
 		log.Sugar.Errorw("cache.GetNews", "error", err)
 		return nil, fmt.Errorf("cache.GetNews: %w", err)
 	}
@@ -48,21 +46,10 @@ func ListNews(ctx context.Context) ([]*model.News, error) {
 	return news, nil
 }
 
-func AddNews(ctx context.Context, news *model.News) error {
-	if err := database.DB.Create(news).Error; err != nil {
-		log.Sugar.Errorw("cache.AddNews", "error", err)
-		return fmt.Errorf("cache.AddNews: %w", err)
-	}
-
-	return nil
-}
-
 func ListNewsByFeedID(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error) {
-	var err error
-	news := make([]*model.News, 0, 1024)
-	newsBytes, err := RedisClient.Get(ctx, fmt.Sprintf("feed:%v", req.FeedID)).Bytes()
+	newsBytes, err := rdb.Get(ctx, fmt.Sprintf("feed:%v", req.FeedID)).Bytes()
 	if err == redis.Nil {
-		news, err = database.ListNewsByFeedID(ctx, req.FeedID)
+		news, err := database.ListNewsByFeedID(ctx, req.FeedID)
 		if err != nil {
 			log.Sugar.Errorw("cache.ListNewsByFeedID", "error", err)
 			return nil, fmt.Errorf("cache.ListNewsByFeedID: %w", err)
@@ -74,7 +61,8 @@ func ListNewsByFeedID(ctx context.Context, req *model.ListNewsReq) ([]*model.New
 			return nil, fmt.Errorf("cache.ListNewsByFeedID: %w", err)
 		}
 
-		if err := RedisClient.Set(ctx, fmt.Sprintf("feed:%v", req.FeedID), newsBytes, time.Hour).Err(); err != nil {
+		key := fmt.Sprintf("feed:%v", req.FeedID)
+		if err := rdb.Set(ctx, key, newsBytes, time.Hour).Err(); err != nil {
 			log.Sugar.Errorw("cache.ListNewsByFeedID", "error", err)
 			return nil, fmt.Errorf("cache.ListNewsByFeedID: %w", err)
 		}
@@ -85,6 +73,7 @@ func ListNewsByFeedID(ctx context.Context, req *model.ListNewsReq) ([]*model.New
 		return nil, fmt.Errorf("cache.ListNewsByFeedID: %w", err)
 	}
 
+	news := make([]*model.News, 0, 1024)
 	if err := json.Unmarshal(newsBytes, &news); err != nil {
 		log.Sugar.Errorw("cache.ListNewsByFeedID", "error", err)
 		return nil, fmt.Errorf("cache.ListNewsByFeedID: %w", err)
@@ -94,25 +83,16 @@ func ListNewsByFeedID(ctx context.Context, req *model.ListNewsReq) ([]*model.New
 }
 
 func GetLastNewsTime(ctx context.Context, feedID int) (time.Time, error) {
-	var lastNewsTime time.Time
-	var err error
-
-	key := fmt.Sprintf("lastNewsTime:%v", feedID)
-
-	lastNewsTimeByte, err := RedisClient.Get(ctx, key).Bytes()
+	key := fmt.Sprintf("last.news.time:%v", feedID)
+	lastNewsTimeString, err := rdb.Get(ctx, key).Result()
 	if err == redis.Nil {
-		lastNewsTime, err = database.GetLastNewsTime(ctx, feedID)
+		lastNewsTime, err := database.GetLastNewsTime(ctx, feedID)
 		if err != nil {
 			return time.Time{}, err
 		}
 
-		tmp, err := json.Marshal(lastNewsTime)
-		if err != nil {
-			log.Sugar.Errorw("cache.GetLastNewsTime", "error", err)
-			return time.Time{}, fmt.Errorf("cache.GetLastNewsTime: %w", err)
-		}
-
-		if err := RedisClient.Set(ctx, key, tmp, time.Hour).Err(); err != nil {
+		value := lastNewsTime.Format("2006-01-02 15:04:05")
+		if err := rdb.Set(ctx, key, value, time.Hour).Err(); err != nil {
 			log.Sugar.Errorw("cache.GetLastNewsTime", "error", err)
 			return time.Time{}, fmt.Errorf("cache.GetLastNewsTime: %w", err)
 		}
@@ -123,7 +103,8 @@ func GetLastNewsTime(ctx context.Context, feedID int) (time.Time, error) {
 		return time.Time{}, fmt.Errorf("cache.GetLastNewsTime: %w", err)
 	}
 
-	if err := json.Unmarshal(lastNewsTimeByte, &lastNewsTime); err != nil {
+	lastNewsTime, err := time.ParseInLocation("2006-01-02 15:04:05", lastNewsTimeString, time.Local)
+	if err != nil {
 		log.Sugar.Errorw("cache.GetLastNewsTime", "error", err)
 		return time.Time{}, fmt.Errorf("cache.GetLastNewsTime: %w", err)
 	}
@@ -132,15 +113,9 @@ func GetLastNewsTime(ctx context.Context, feedID int) (time.Time, error) {
 }
 
 func SetLastNewsTime(ctx context.Context, feedID int) error {
-	tmp, err := json.Marshal(time.Now())
-	if err != nil {
-		log.Sugar.Errorw("cache.SetLastNewsTime", "error", err)
-		return fmt.Errorf("cache.SetLastNewsTime: %w", err)
-	}
-
-	key := fmt.Sprintf("lastNewsTime:%v", feedID)
-
-	if err := RedisClient.Set(ctx, key, tmp, time.Hour).Err(); err != nil {
+	key := fmt.Sprintf("last.news.time:%v", feedID)
+	value := time.Now().Format("2006-01-02 15:04:05")
+	if err := rdb.Set(ctx, key, value, time.Hour).Err(); err != nil {
 		log.Sugar.Errorw("cache.SetLastNewsTime", "error", err)
 		return fmt.Errorf("cache.SetLastNewsTime: %w", err)
 	}
