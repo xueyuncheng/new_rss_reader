@@ -35,7 +35,7 @@ jobs:
       - name: curl
         uses: wei/curl@v1
         with:
-          curl: >
+          args: >
             -X POST 'http://47.117.165.47:60010/api/execute'  
             
   
