@@ -33,11 +33,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: curl
-        uses: enflo/curl-action@master
+        uses: wei/curl@v1
         with:
           curl: >
-            --location --request POST 'http://47.117.165.47:60010/api/execute'  
-            --header 'Content-Type: application/json'  
-            --data-raw '{ "key": "xx", "command": "cd /root/Documents/github/new_rss_reader/deploy && docker-compose pull && docker-compose up -d" }'
-    
+            -X POST 'http://47.117.165.47:60010/api/execute'  
+            
   
