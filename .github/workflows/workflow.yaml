@@ -2,6 +2,8 @@ name: workflow
 on:
   push:
     branches: [master]
+  push_to_branch:
+    branches: [master]
 jobs:
   build-backend-image:
     runs-on: ubuntu-latest
