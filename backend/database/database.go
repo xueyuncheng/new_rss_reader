@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"myNewFeed/internal/log"
 	"myNewFeed/model"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,4 +20,14 @@ func InitDB(config *model.Mysql) {
 	if err != nil {
 		log.Sugar.Fatalw("数据库连接失败", "err", err)
 	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Sugar.Fatalw("数据库连接失败", "err", err)
+	}
+
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
 }

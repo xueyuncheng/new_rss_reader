@@ -20,6 +20,9 @@ func ListNews(ctx context.Context, req *model.ListNewsReq) ([]*model.News, error
 }
 
 func RefreshNews() {
+	srv.Mutex.Lock()
+	defer srv.Mutex.Unlock()
+
 	ctx := context.Background()
 	feeds, err := cache.ListFeed(ctx)
 	if err != nil {
@@ -106,4 +109,18 @@ func getNews(feed *gofeed.Feed, feedM *model.Feed, item *gofeed.Item, lastNewsTi
 	}
 
 	return news, true
+}
+
+func DeleteOldNews() {
+	srv.Mutex.Lock()
+	defer srv.Mutex.Unlock()
+
+	ctx := context.Background()
+	if err := database.DeleteOldNews(ctx); err != nil {
+		return
+	}
+
+	if err := cache.DeleteNews(ctx); err != nil {
+		return
+	}
 }
