@@ -2,7 +2,7 @@
   <div class="feed_group">
     <form @submit.prevent="addFeed(name)" style="display: inline-block">
       <input type="text" v-model="name" placeholder="请输入RSS源" />
-      <button type="submit">添加</button>
+      <button type="submit">添加1</button>
     </form>
 
     <button style="margin-left: 20px" @click="listNews()">刷新</button>

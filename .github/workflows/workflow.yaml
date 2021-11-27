@@ -1,7 +1,7 @@
 name: workflow
 on: [push]
 jobs:
-  build-backend:
+  build-backend-image:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -13,7 +13,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         workdir: backend
 
-  build-frontend:
+  build-frontend-image:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -31,14 +31,15 @@ jobs:
       - build-backend
       - build-frontend
     steps:
-      - name: Server Shell
-        uses: tzzs/server-shell@v2
+      - name: curl
+        uses: wei/curl@v1
         with:
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY}}
-          USERNAME: ${{secrets.SSH_USERNAME}}
-          IP: ${{secrets.SSH_IPPORT}}
-          SHELL: |
-            "echo action-test"
-            "ls"
+          args: |
+            --location --request POST 'http://aliyun:60010/api/execute' \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+                "key": "xx",
+                "command": "cd /root/Documents/github/new_rss_reader/deploy && docker-compose pull && docker-compose up -d"
+            }'
     
   
