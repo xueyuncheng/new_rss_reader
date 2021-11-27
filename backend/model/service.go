@@ -1,12 +1,12 @@
 package model
 
 import (
-	"net/url"
+	"sync"
 
 	"github.com/mmcdole/gofeed"
 )
 
 type Service struct {
 	FeedParser *gofeed.Parser
-	ProxyUrl   *url.URL
+	Mutex      *sync.Mutex
 }

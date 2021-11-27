@@ -34,3 +34,13 @@ func DeleteFeed(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func ListFeed(ctx context.Context) ([]*model.Feed, error) {
+	feeds := make([]*model.Feed, 0, 16)
+	if err := db.Find(&feeds).Error; err != nil {
+		log.Sugar.Errorw("获取rss源错误", "err", err)
+		return nil, fmt.Errorf("获取rss源错误: %v", err)
+	}
+
+	return feeds, nil
+}

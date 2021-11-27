@@ -51,3 +51,13 @@ func GetLastNewsTime(ctx context.Context, feedID int) (time.Time, error) {
 
 	return news.PublishTime, nil
 }
+
+func DeleteOldNews(ctx context.Context) error {
+	if err := db.Where("publish_time < ?", time.Now().Add(-time.Hour*24*7)).
+		Delete(&model.News{}).Error; err != nil {
+		log.Sugar.Errorw("delete old news error", "error", err)
+		return fmt.Errorf("delete old news error: %v", err)
+	}
+
+	return nil
+}
