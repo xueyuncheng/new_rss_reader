@@ -37,8 +37,6 @@ jobs:
           args: >
             --location --request POST 'http://47.117.165.47:60010/api/execute'  
             --header 'Content-Type: application/json'  
-            --data-raw '{ "key": "xx", "command": 
-              "cd /root/Documents/github/new_rss_reader/deploy && 
-              docker-compose pull && docker-compose up -d" }'
+            --data-raw '{ "key": "xx", "command": "cd /root/Documents/github/new_rss_reader/deploy && docker-compose pull && docker-compose up -d" }'
     
   
