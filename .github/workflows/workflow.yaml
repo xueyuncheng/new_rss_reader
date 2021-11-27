@@ -28,8 +28,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs:
-      - build-backend
-      - build-frontend
+      - build-backend-image
+      - build-frontend-image
     steps:
       - name: curl
         uses: wei/curl@v1
