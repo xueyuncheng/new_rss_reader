@@ -44,3 +44,12 @@ func ListFeed(ctx context.Context) ([]*model.Feed, error) {
 
 	return feeds, nil
 }
+
+func UpdateFeed(ctx context.Context, feed *model.Feed) error {
+	if err := db.Updates(feed).Error; err != nil {
+		log.Sugar.Errorw("更新rss源错误", "err", err)
+		return fmt.Errorf("更新rss源错误: %v", err)
+	}
+
+	return nil
+}

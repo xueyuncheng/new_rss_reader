@@ -2,7 +2,7 @@
   <div class="feed_group">
     <form @submit.prevent="addFeed(name)" style="display: inline-block">
       <input type="text" v-model="name" placeholder="请输入RSS源" />
-      <button type="submit">添加1</button>
+      <button type="submit">添加</button>
     </form>
 
     <button style="margin-left: 20px" @click="listNews()">刷新</button>
@@ -10,7 +10,7 @@
     <div class="feed" v-for="feed in feeds" :key="feed.id">
       <input
         type="radio"
-        v-model="checked_ids"
+        v-model="checked_id"
         :key="feed.id"
         :value="feed.id"
         :id="feed.id"
@@ -20,6 +20,9 @@
         {{ feed.name }}
       </label>
       <button @click="deleteFeed(feed.id)" :key="feed.id">删除</button>
+      <p style="display: inline-block; margin-left: 20px; color: red">
+        {{ feed.error_msg }}
+      </p>
     </div>
   </div>
 
@@ -33,6 +36,27 @@
   </div>
 </template>
 
+<style>
+button {
+  min-width: 60px;
+  min-height: 25px;
+  margin-left: 20px;
+}
+
+.feed_group {
+  margin-bottom: 30px;
+}
+
+.feed {
+  height: 20px;
+  margin-top: 10px;
+}
+
+.news {
+  margin-top: 10px;
+}
+</style>
+
 <script>
 import axios from "axios";
 
@@ -43,14 +67,13 @@ export default {
     return {
       feeds: [],
       name: "",
-      checked_ids: [],
+      checked_id: 0,
       newses: [],
     };
   },
 
   created() {
     this.listFeed();
-    this.listNews();
   },
 
   methods: {
@@ -108,18 +131,3 @@ export default {
 };
 </script>
 
-<style>
-button {
-  min-width: 60px;
-  min-height: 25px;
-  margin-left: 20px;
-}
-
-.feed {
-  margin-top: 10px;
-}
-
-.news {
-  margin-top: 5px;
-}
-</style>

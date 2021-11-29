@@ -15,7 +15,17 @@ func ListFeed(ctx *gin.Context) interface{} {
 		return ecode.ErrInternal.WithData(err.Error())
 	}
 
-	return ecode.ErrOK.WithData(feeds)
+	feedsResp := make([]*model.ListFeedResp, 0, len(feeds))
+	for _, feed := range feeds {
+		tmp := &model.ListFeedResp{
+			ID:       feed.ID,
+			Name:     feed.Name,
+			ErrorMsg: feed.ErrorMsg,
+		}
+		feedsResp = append(feedsResp, tmp)
+	}
+
+	return ecode.ErrOK.WithData(feedsResp)
 }
 
 func AddFeed(ctx *gin.Context) interface{} {

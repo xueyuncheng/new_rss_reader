@@ -33,7 +33,16 @@ func RefreshNews() {
 	for _, v := range feeds {
 		news, err := getFeedNews(ctx, v)
 		if err != nil {
-			return
+			v.ErrorMsg = err.Error()
+			if err := database.UpdateFeed(ctx, v); err != nil {
+				return
+			}
+
+			if err := cache.DeleteFeed(ctx); err != nil {
+				return
+			}
+
+			continue
 		}
 
 		newses = append(newses, news...)
