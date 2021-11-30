@@ -27,6 +27,7 @@ func main() {
 	}
 
 	os.Setenv("HTTP_PROXY", config.Proxy.Address)
+	os.Setenv("HTTPS_PROXY", config.Proxy.Address)
 
 	log.InitLog()
 	database.InitDB(&config.Mysql)
