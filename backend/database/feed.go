@@ -53,3 +53,12 @@ func UpdateFeed(ctx context.Context, feed *model.Feed) error {
 
 	return nil
 }
+
+func UpdateFeedStatus(ctx context.Context, id int, status string) error {
+	if err := db.Model(&model.Feed{}).Where("id = ?", id).Update("error_msg", status).Error; err != nil {
+		log.Sugar.Errorw("更新rss源状态错误", "err", err)
+		return fmt.Errorf("更新rss源状态错误: %v", err)
+	}
+
+	return nil
+}

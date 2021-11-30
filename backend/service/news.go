@@ -31,6 +31,11 @@ func RefreshNews() {
 
 	newses := make([]*model.News, 0, 128)
 	for _, v := range feeds {
+		ok, err := cache.GetFeedStatus(ctx, v.ID)
+		if err != nil {
+			return
+		}
+
 		news, err := getFeedNews(ctx, v)
 		if err != nil {
 			v.ErrorMsg = err.Error()
@@ -42,7 +47,27 @@ func RefreshNews() {
 				return
 			}
 
+			if ok {
+				if err := cache.SetFeedStatus(ctx, v.ID, false); err != nil {
+					return
+				}
+			}
 			continue
+		}
+
+		if !ok {
+			if err := database.UpdateFeedStatus(ctx, v.ID, ""); err != nil {
+				return
+			}
+
+			if err := cache.DeleteFeed(ctx); err != nil {
+				return
+			}
+
+			if err := cache.SetFeedStatus(ctx, v.ID, true); err != nil {
+				return
+			}
+
 		}
 
 		newses = append(newses, news...)
