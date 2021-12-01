@@ -26,6 +26,11 @@
     </div>
   </div>
 
+  <div
+    id="chart"
+    style="width: 600px; height: 400px; position: absolute; top: 0; right: 0"
+  ></div>
+
   <div class="news_group">
     <ol>
       <li class="news" v-for="item in newses" :key="item.id">
@@ -59,6 +64,7 @@ button {
 
 <script>
 import axios from "axios";
+import * as echarts from "echarts";
 
 export default {
   name: "Feed",
@@ -70,6 +76,10 @@ export default {
       checked_id: 0,
       newses: [],
     };
+  },
+
+  mounted() {
+    this.initEchart();
   },
 
   created() {
@@ -126,6 +136,38 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    initEchart() {
+      axios.get(`/api/news/stat`).then((response) => {
+        const data = response.data.data;
+        const xAxis = [];
+        const yAxis = [];
+
+        data.items.forEach((element) => {
+          xAxis.push(element.name);
+          yAxis.push(element.value);
+        });
+
+        const myChart = echarts.init(document.getElementById("chart"));
+        myChart.setOption({
+          title: {
+            text: response.data.name,
+          },
+          tooltip: {},
+          xAxis: {
+            data: xAxis,
+          },
+          yAxis: {},
+          series: [
+            {
+              name: "新闻数量",
+              type: "bar",
+              data: yAxis,
+            },
+          ],
+        });
+      });
     },
   },
 };

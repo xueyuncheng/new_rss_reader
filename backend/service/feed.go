@@ -22,11 +22,31 @@ func AddFeed(ctx context.Context, req *model.AddFeedReq) error {
 		return err
 	}
 
-	return cache.DeleteFeed(ctx)
+	if err := cache.DeleteFeed(ctx); err != nil {
+		return err
+	}
+
+	if err := cache.DeleteNews(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func DeleteFeed(ctx context.Context, id int) error {
 	if err := database.DeleteFeed(ctx, id); err != nil {
+		return err
+	}
+
+	if err := database.DeleteNews(ctx, id); err != nil {
+		return err
+	}
+
+	if err := cache.DeleteFeedByID(ctx, id); err != nil {
+		return err
+	}
+
+	if err := cache.DeleteNews(ctx); err != nil {
 		return err
 	}
 

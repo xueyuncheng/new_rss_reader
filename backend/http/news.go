@@ -35,3 +35,12 @@ func ListNews(ctx *gin.Context) interface{} {
 
 	return ecode.ErrOK.WithData(newsResp)
 }
+
+func StatNews(ctx *gin.Context) interface{} {
+	chart, err := service.StatNews(ctx)
+	if err != nil {
+		return ecode.ErrInternal.WithData(err.Error())
+	}
+
+	return ecode.ErrOK.WithData(chart)
+}

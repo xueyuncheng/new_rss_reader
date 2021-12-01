@@ -123,11 +123,9 @@ func SetLastNewsTime(ctx context.Context, feedID int) error {
 	return nil
 }
 
-func DeleteNews(ctx context.Context) error {
+func DeleteFeedNews(ctx context.Context) error {
 	pipe := rdb.TxPipeline()
 	defer pipe.Close()
-
-	pipe.Del(ctx, "news")
 
 	feeds, err := database.ListFeed(ctx)
 	if err != nil {
@@ -142,6 +140,15 @@ func DeleteNews(ctx context.Context) error {
 	if _, err := pipe.Exec(ctx); err != nil {
 		log.Sugar.Errorw("pipeline执行错误", "error", err)
 		return fmt.Errorf("pipeline执行错误: %w", err)
+	}
+
+	return nil
+}
+
+func DeleteNews(ctx context.Context) error {
+	if err := rdb.Del(ctx, "news").Err(); err != nil {
+		log.Sugar.Errorw("cache.DeleteFeedNews", "error", err)
+		return fmt.Errorf("cache.DeleteFeedNews: %w", err)
 	}
 
 	return nil

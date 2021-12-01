@@ -88,3 +88,13 @@ func GetFeedStatus(ctx context.Context, id int) (bool, error) {
 
 	return ok, nil
 }
+
+func DeleteFeedStatus(ctx context.Context, id int) error {
+	key := fmt.Sprintf("status.feed:%v", id)
+	if err := rdb.Del(ctx, key).Err(); err != nil {
+		log.Sugar.Errorw("redis del error", "err", err)
+		return fmt.Errorf("redis del error: %w", err)
+	}
+
+	return nil
+}

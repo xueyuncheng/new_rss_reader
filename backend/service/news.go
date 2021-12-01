@@ -31,43 +31,16 @@ func RefreshNews() {
 
 	newses := make([]*model.News, 0, 128)
 	for _, v := range feeds {
-		ok, err := cache.GetFeedStatus(ctx, v.ID)
-		if err != nil {
-			return
-		}
-
 		news, err := getFeedNews(ctx, v)
 		if err != nil {
 			v.ErrorMsg = err.Error()
 			if err := database.UpdateFeed(ctx, v); err != nil {
 				return
 			}
-
-			if err := cache.DeleteFeed(ctx); err != nil {
-				return
-			}
-
-			if ok {
-				if err := cache.SetFeedStatus(ctx, v.ID, false); err != nil {
-					return
-				}
-			}
-			continue
 		}
 
-		if !ok {
-			if err := database.UpdateFeedStatus(ctx, v.ID, ""); err != nil {
-				return
-			}
-
-			if err := cache.DeleteFeed(ctx); err != nil {
-				return
-			}
-
-			if err := cache.SetFeedStatus(ctx, v.ID, true); err != nil {
-				return
-			}
-
+		if err := updateFeedStatus(ctx, v.ID); err != nil {
+			return
 		}
 
 		newses = append(newses, news...)
@@ -157,4 +130,73 @@ func DeleteOldNews() {
 	if err := cache.DeleteNews(ctx); err != nil {
 		return
 	}
+
+	if err := cache.DeleteFeedNews(ctx); err != nil {
+		return
+	}
+}
+
+func StatNews(ctx context.Context) (*model.Chart, error) {
+	news, err := cache.ListNews(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]int)
+	for _, v := range news {
+		m[v.PublishTime.Format("01-02")]++
+	}
+
+	chart := &model.Chart{
+		Name:  "news",
+		Items: []*model.Item{},
+	}
+
+	if len(news) == 0 {
+		return chart, nil
+	}
+
+	newest := news[0].PublishTime.Truncate(24 * time.Hour)
+	oldest := news[len(news)-1].PublishTime.Truncate(24 * time.Hour)
+	for day := oldest; !day.After(newest); day = day.AddDate(0, 0, 1) {
+		tmp := &model.Item{
+			Name:  day.Format("01-02"),
+			Value: float64(m[day.Format("01-02")]),
+		}
+
+		chart.Items = append(chart.Items, tmp)
+	}
+
+	return chart, nil
+}
+
+func updateFeedStatus(ctx context.Context, id int) error {
+	ok, err := cache.GetFeedStatus(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		if err := cache.DeleteFeed(ctx); err != nil {
+			return err
+		}
+
+		if err := cache.SetFeedStatus(ctx, id, false); err != nil {
+			return err
+		}
+	} else {
+		if err := database.UpdateFeedStatus(ctx, id, ""); err != nil {
+			return err
+		}
+
+		if err := cache.DeleteFeed(ctx); err != nil {
+			return err
+		}
+
+		if err := cache.SetFeedStatus(ctx, id, true); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

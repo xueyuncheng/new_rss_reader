@@ -9,7 +9,7 @@ import (
 
 func GetFeed(ctx context.Context) ([]*model.Feed, error) {
 	feeds := make([]*model.Feed, 0, 16)
-	if err := db.Find(&feeds).Error; err != nil {
+	if err := db.WithContext(ctx).Find(&feeds).Error; err != nil {
 		log.Sugar.Errorw("获取rss源错误", "err", err)
 		return nil, fmt.Errorf("获取rss源错误: %v", err)
 	}
@@ -18,7 +18,7 @@ func GetFeed(ctx context.Context) ([]*model.Feed, error) {
 }
 
 func AddFeed(ctx context.Context, feed *model.Feed) error {
-	if err := db.Create(feed).Error; err != nil {
+	if err := db.WithContext(ctx).Create(feed).Error; err != nil {
 		log.Sugar.Errorw("添加rss源错误", "err", err)
 		return fmt.Errorf("添加rss源错误: %v", err)
 	}
@@ -27,7 +27,7 @@ func AddFeed(ctx context.Context, feed *model.Feed) error {
 }
 
 func DeleteFeed(ctx context.Context, id int) error {
-	if err := db.Where("id = ?", id).Delete(&model.Feed{}).Error; err != nil {
+	if err := db.WithContext(ctx).Where("id = ?", id).Delete(&model.Feed{}).Error; err != nil {
 		log.Sugar.Errorw("删除rss源错误", "err", err)
 		return fmt.Errorf("删除rss源错误: %v", err)
 	}
@@ -37,7 +37,7 @@ func DeleteFeed(ctx context.Context, id int) error {
 
 func ListFeed(ctx context.Context) ([]*model.Feed, error) {
 	feeds := make([]*model.Feed, 0, 16)
-	if err := db.Find(&feeds).Error; err != nil {
+	if err := db.WithContext(ctx).Find(&feeds).Error; err != nil {
 		log.Sugar.Errorw("获取rss源错误", "err", err)
 		return nil, fmt.Errorf("获取rss源错误: %v", err)
 	}
@@ -46,7 +46,7 @@ func ListFeed(ctx context.Context) ([]*model.Feed, error) {
 }
 
 func UpdateFeed(ctx context.Context, feed *model.Feed) error {
-	if err := db.Updates(feed).Error; err != nil {
+	if err := db.WithContext(ctx).Updates(feed).Error; err != nil {
 		log.Sugar.Errorw("更新rss源错误", "err", err)
 		return fmt.Errorf("更新rss源错误: %v", err)
 	}
@@ -55,7 +55,7 @@ func UpdateFeed(ctx context.Context, feed *model.Feed) error {
 }
 
 func UpdateFeedStatus(ctx context.Context, id int, status string) error {
-	if err := db.Model(&model.Feed{}).Where("id = ?", id).Update("error_msg", status).Error; err != nil {
+	if err := db.WithContext(ctx).Model(&model.Feed{}).Where("id = ?", id).Update("error_msg", status).Error; err != nil {
 		log.Sugar.Errorw("更新rss源状态错误", "err", err)
 		return fmt.Errorf("更新rss源状态错误: %v", err)
 	}

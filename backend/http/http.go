@@ -37,6 +37,7 @@ func InitRouter(router *gin.Engine) {
 	news := api.Group("/news")
 	{
 		news.GET("", wrap(ListNews))
+		news.GET("/stat", wrap(StatNews))
 	}
 }
 
